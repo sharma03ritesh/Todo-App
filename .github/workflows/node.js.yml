@@ -9,14 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x, 24.x]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -25,29 +23,49 @@ jobs:
           cache: "npm"
           cache-dependency-path: todo/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         working-directory: ./todo
-        run: npm install
+        run: npm ci
 
       - name: Run tests and generate coverage report
         working-directory: ./todo
         run: npm test -- --coverage
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '22.x'   # upload once
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./todo/coverage
 
       - name: Build
         working-directory: ./todo
         run: npm run build
 
-      - name: Deploy
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+          cache-dependency-path: todo/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./todo
+        run: npm ci
+
+      - name: Build and deploy
         working-directory: ./todo
         run: |
           git config --global user.name "$user_name"
           git config --global user.email "$user_email"
-          git remote set-url origin https://${github_token}@github.com/${repository}
+          git remote set-url origin https://x-access-token:${github_token}@github.com/${repository}
           npm run deploy
         env:
           user_name: "github-actions[bot]"
