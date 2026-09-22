@@ -39,7 +39,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
       
     - name: Build
-      run: npn run build
+      run: npm run build
     
     - name: Deploy
       run: |
