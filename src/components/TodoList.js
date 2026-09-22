@@ -10,7 +10,7 @@ let Collection = example;
 const TodoList = (props) => {
   const [Useritem, setUseritem] = useState(Collection.users);
   const [Norecord, setNorecord] = useState(Boolean);
-  const [Editor, setEditor] = useState({});
+  const [Editor] = useState({});
   const [editClicked, seteditClickedvalue] = useState(false);
   const [whatisindex, setindex] = useState(1);
   const [AddButtonClicked, setAddButtonClicked] = useState(Boolean);
