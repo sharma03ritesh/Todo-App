@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Button from 'react-bootstrap/esm/Button';
+import Button from 'react-bootstrap/Button';
 import './Addtodo.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 const EditData = (props) => {
